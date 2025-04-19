@@ -2,17 +2,17 @@ package lib;
 
 import java.time.LocalDate;
 import java.util.LinkedList;
-import java.util.List; // List masih digunakan
+import java.util.List;
 
 public class Employee {
 
-    // Constants for Grades and Salaries (Sama seperti Tahap 1)
+    // Constants (Sama seperti Tahap 1)
     private static final int GRADE_1_SALARY = 3000000;
     private static final int GRADE_2_SALARY = 5000000;
     private static final int GRADE_3_SALARY = 7000000;
     private static final double FOREIGNER_SALARY_MULTIPLIER = 1.5;
 
-    // ... (atribut employeeId hingga gender sama) ...
+    // Atribut (Sama seperti Tahap 2)
 	private String employeeId;
 	private String firstName;
 	private String lastName;
@@ -29,16 +29,11 @@ public class Employee {
 	private int annualDeductible;
 	private String spouseName;
 	private String spouseIdNumber;
-
-    // --- Perubahan di sini ---
-    // private List<String> childNames; // Dihapus
-    // private List<String> childIdNumbers; // Dihapus
-    private List<Child> children; // Diganti dengan List objek Child
-    // --- Akhir Perubahan ---
+    private List<Child> children;
 
 
+    // Constructor (Sama seperti Tahap 2)
     public Employee(String employeeId, String firstName, String lastName, String idNumber, String address, int yearJoined, int monthJoined, int dayJoined, boolean isForeigner, boolean gender) {
-        // ... (inisialisasi atribut lain sama) ...
 		this.employeeId = employeeId;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -49,66 +44,60 @@ public class Employee {
 		this.dayJoined = dayJoined;
 		this.isForeigner = isForeigner;
 		this.gender = gender;
+        children = new LinkedList<>();
+    }
 
+    /**
+     * Menetapkan gaji bulanan pegawai berdasarkan grade.
+     * Gaji WNA dinaikkan sebesar 50%.
+     * Memperbaiki bug perhitungan gaji WNA dan menghilangkan duplikasi.
+     *
+     * @param grade Tingkat grade pegawai (1, 2, atau 3).
+     */
+    public void setMonthlySalary(int grade) {
         // --- Perubahan di sini ---
-        // childNames = new LinkedList<String>(); // Dihapus
-        // childIdNumbers = new LinkedList<String>(); // Dihapus
-        children = new LinkedList<>(); // Inisialisasi List Child
+        int baseSalary;
+        switch (grade) {
+            case 1:
+                baseSalary = GRADE_1_SALARY;
+                break;
+            case 2:
+                baseSalary = GRADE_2_SALARY;
+                break;
+            case 3:
+                baseSalary = GRADE_3_SALARY;
+                break;
+            default:
+                 baseSalary = 0; // Jika grade tidak valid, set gaji ke 0
+        }
+
+        if (isForeigner) {
+            // Terapkan multiplier HANYA SEKALI setelah base salary ditentukan
+            this.monthlySalary = (int) (baseSalary * FOREIGNER_SALARY_MULTIPLIER);
+        } else {
+            this.monthlySalary = baseSalary;
+        }
         // --- Akhir Perubahan ---
     }
 
-    // setMonthlySalary masih sama seperti Tahap 1 (dengan bug asli)
-	public void setMonthlySalary(int grade) {
-        if (grade == 1) {
-            monthlySalary = GRADE_1_SALARY;
-            if (isForeigner) {
-                monthlySalary = (int) (GRADE_1_SALARY * FOREIGNER_SALARY_MULTIPLIER);
-            }
-        } else if (grade == 2) {
-            monthlySalary = GRADE_2_SALARY;
-            if (isForeigner) {
-                monthlySalary = (int) (GRADE_1_SALARY * FOREIGNER_SALARY_MULTIPLIER); // Bug Masih Ada
-            }
-        } else if (grade == 3) {
-            monthlySalary = GRADE_3_SALARY;
-            if (isForeigner) {
-                monthlySalary = (int) (GRADE_1_SALARY * FOREIGNER_SALARY_MULTIPLIER); // Bug Masih Ada
-            }
-        }
-	}
-
-    // setAnnualDeductible, setAdditionalIncome, setSpouse sama seperti Tahap 1
-	public void setAnnualDeductible(int deductible) {
-		this.annualDeductible = deductible;
-	}
-	public void setAdditionalIncome(int income) {
-		this.otherMonthlyIncome = income;
-	}
+    // Method lain (setAnnualDeductible, setAdditionalIncome, setSpouse, addChild, getAnnualIncomeTax) sama seperti Tahap 2
+	public void setAnnualDeductible(int deductible) { this.annualDeductible = deductible; }
+	public void setAdditionalIncome(int income) { this.otherMonthlyIncome = income; }
 	public void setSpouse(String spouseName, String spouseIdNumber) {
 		this.spouseName = spouseName;
 		this.spouseIdNumber = idNumber; // Bug Masih Ada
 	}
-
-    // --- Perubahan di sini ---
-    public void addChild(String childName, String childIdNumber) {
-        // childNames.add(childName); // Dihapus
-        // childIdNumbers.add(childIdNumber); // Dihapus
-        children.add(new Child(childName, childIdNumber)); // Tambahkan objek Child ke list
-    }
-    // --- Akhir Perubahan ---
-
-    public int getAnnualIncomeTax() {
+	public void addChild(String childName, String childIdNumber) {
+		children.add(new Child(childName, childIdNumber));
+	}
+	public int getAnnualIncomeTax() {
         LocalDate date = LocalDate.now();
         if (date.getYear() == yearJoined) {
             monthWorkingInYear = date.getMonthValue() - monthJoined;
         } else {
             monthWorkingInYear = 12; // Masih pakai literal 12
         }
-
-        // --- Perubahan di sini ---
-        // Menggunakan children.size() bukan childIdNumbers.size()
+        // Cek isMarried masih kurang ideal
         return TaxFunction.calculateTax(monthlySalary, otherMonthlyIncome, monthWorkingInYear, annualDeductible, spouseIdNumber != null && !spouseIdNumber.isEmpty(), children.size());
-        // Juga perbaiki pengecekan isMarried agar lebih aman dari NullPointerException
-        // --- Akhir Perubahan ---
-    }
+	}
 }
