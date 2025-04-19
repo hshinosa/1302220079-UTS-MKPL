@@ -2,10 +2,13 @@ package lib;
 
 import java.time.LocalDate;
 import java.time.Month; 
+
 import java.util.LinkedList;
-import java.util.List;
+import java.util.List; // List masih digunakan
 
 public class Employee {
+
+    // Constants for Grades and Salaries (Sama seperti Tahap 1)
 
     private static final int GRADE_1_SALARY = 3000000;
     private static final int GRADE_2_SALARY = 5000000;
@@ -13,6 +16,7 @@ public class Employee {
     private static final double FOREIGNER_SALARY_MULTIPLIER = 1.5;
 
     // ... (atribut lainnya sama seperti awal) ...
+
 	private String employeeId;
 	private String firstName;
 	private String lastName;
@@ -24,6 +28,7 @@ public class Employee {
 	private int monthWorkingInYear;
 	private boolean isForeigner;
 	private boolean gender; //true = Laki-laki, false = Perempuan
+
 	private int monthlySalary;
 	private int otherMonthlyIncome;
 	private int annualDeductible;
@@ -35,6 +40,16 @@ public class Employee {
 
     public Employee(String employeeId, String firstName, String lastName, String idNumber, String address, int yearJoined, int monthJoined, int dayJoined, boolean isForeigner, boolean gender) {
         // ... (isi constructor sama seperti awal) ...
+
+    // --- Perubahan di sini ---
+    // private List<String> childNames; // Dihapus
+    // private List<String> childIdNumbers; // Dihapus
+    private List<Child> children; // Diganti dengan List objek Child
+    // --- Akhir Perubahan ---
+
+
+    public Employee(String employeeId, String firstName, String lastName, String idNumber, String address, int yearJoined, int monthJoined, int dayJoined, boolean isForeigner, boolean gender) {
+        // ... (inisialisasi atribut lain sama) ...
 		this.employeeId = employeeId;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -54,6 +69,16 @@ public class Employee {
      * Jika pegawai adalah warga negara asing gaji bulanan diperbesar sebanyak 50%
      */
     public void setMonthlySalary(int grade) {
+
+        // --- Perubahan di sini ---
+        // childNames = new LinkedList<String>(); // Dihapus
+        // childIdNumbers = new LinkedList<String>(); // Dihapus
+        children = new LinkedList<>(); // Inisialisasi List Child
+        // --- Akhir Perubahan ---
+    }
+
+    // setMonthlySalary masih sama seperti Tahap 1 (dengan bug asli)
+	public void setMonthlySalary(int grade) {
         if (grade == 1) {
             monthlySalary = GRADE_1_SALARY;
             if (isForeigner) {
@@ -63,6 +88,7 @@ public class Employee {
             monthlySalary = GRADE_2_SALARY;
             if (isForeigner) {
                 monthlySalary = (int) (GRADE_1_SALARY * FOREIGNER_SALARY_MULTIPLIER);
+
             }
         } else if (grade == 3) {
             monthlySalary = GRADE_3_SALARY;
@@ -73,6 +99,11 @@ public class Employee {
     }
 
     // ... (method lainnya setAnnualDeductible, setAdditionalIncome, setSpouse, addChild sama seperti awal) ...
+            }
+        }
+	}
+
+    // setAnnualDeductible, setAdditionalIncome, setSpouse sama seperti Tahap 1
 	public void setAnnualDeductible(int deductible) {
 		this.annualDeductible = deductible;
 	}
@@ -101,5 +132,12 @@ public class Employee {
 
         // Memanggil TaxFunction (yang sudah pakai konstanta internalnya)
         return TaxFunction.calculateTax(monthlySalary, otherMonthlyIncome, monthWorkingInYear, annualDeductible, spouseIdNumber.equals(""), childIdNumbers.size());
+
+    // --- Perubahan di sini ---
+    public void addChild(String childName, String childIdNumber) {
+        // childNames.add(childName); // Dihapus
+        // childIdNumbers.add(childIdNumber); // Dihapus
+        children.add(new Child(childName, childIdNumber)); // Tambahkan objek Child ke list
     }
+    // --- Akhir Perubahan ---
 }
